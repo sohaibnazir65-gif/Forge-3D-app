@@ -2,372 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>FORGE 3D PRO - Offline Engine</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Live Test - Forge 3D</title>
     <style>
-        :root {
-            --bg-canvas: #101112;      
-            --bg-panel: #181a1b;       
-            --bg-hover: #26292b;       
-            --text-main: #ffffff;      
-            --text-muted: #8b9298;     
-            --accent-blue: #3b82f6;    
-            --border-color: rgba(255, 255, 255, 0.08);
-            --bg-menu: rgba(20, 22, 24, 0.98);
+        body {
+            background-color: #101112;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-        body { overflow: hidden; background-color: var(--bg-canvas); font-family: 'Segoe UI', Roboto, sans-serif; touch-action: none; color: var(--text-main); -webkit-tap-highlight-color: transparent; }
-
-        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; }
-        .ui-element { z-index: 10; position: absolute; pointer-events: auto; }
-        .ui-wrapper { pointer-events: none; } 
-
-        /* --- MOBILE RESPONSIVE DASHBOARD --- */
-        #home-dashboard {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: var(--bg-canvas); z-index: 100; display: flex; flex-direction: column;
-            transition: opacity 0.3s ease; pointer-events: auto; overflow-y: auto;
+        .container {
+            background: #181a1b;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            max-width: 90%;
         }
-        .dash-header { background: var(--bg-panel); border-bottom: 1px solid var(--border-color); padding: 25px 20px; text-align: center; }
-        .dash-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--text-main); letter-spacing: 1px; }
-        .dash-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
-        
-        .dash-main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 25px; }
-        .dash-section { display: flex; flex-direction: column; gap: 12px; }
-        .dash-section h2 { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .template-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-        .template-card {
-            background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; padding: 18px 15px; cursor: pointer;
-            transition: all 0.2s ease; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s;
+            width: 100%;
         }
-        .template-card:active { background: var(--bg-hover); border-color: var(--accent-blue); }
-        .template-card i { font-size: 24px; color: var(--accent-blue); }
-        .template-card h3 { font-size: 0.95rem; color: var(--text-main); font-weight: 600; }
-        .template-card span { font-size: 0.75rem; color: var(--text-muted); line-height: 1.2; }
-
-        .dash-footer { padding: 20px; text-align: center; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-color); background: var(--bg-panel); margin-top: auto; }
-
-        /* --- UI ELEMENTS --- */
-        #pos-tracker { top: 25px; left: 20px; background: rgba(24, 26, 27, 0.9); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; font-family: monospace; color: var(--text-muted); }
-        #pos-tracker span { color: var(--text-main); }
-
-        #top-transform-bar { top: 25px; left: 50%; transform: translateX(-50%); background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; display: none; padding: 4px; gap: 4px; }
-        #top-transform-bar.show { display: flex; }
-        .top-btn { background: transparent; border: none; color: var(--text-muted); font-size: 16px; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-        .top-btn.active { color: var(--accent-blue); background: rgba(59, 130, 246, 0.15); box-shadow: inset 0 0 0 1px var(--accent-blue); }
-        .v-divider { width: 1px; background: var(--border-color); margin: 6px 2px; }
-
-        #menu-toggle { top: 25px; right: 20px; background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-muted); width: 40px; height: 40px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 18px; }
-
-        #side-menu-panel { top: 0; right: 0; width: 260px; height: 100vh; background: var(--bg-menu); border-left: 1px solid var(--border-color); padding: 25px 20px; display: flex; flex-direction: column; gap: 15px; transform: translateX(100%); transition: transform 0.3s; z-index: 40; backdrop-filter: blur(10px); }
-        #side-menu-panel.show { transform: translateX(0); }
-        .menu-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-        .menu-title { font-weight: bold; font-size: 16px; color: var(--text-main); }
-        #menu-close { background: transparent; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
-        .menu-link { background: transparent; border: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; font-size: 14px; font-weight: 600; }
-        .menu-link i { font-size: 16px; min-width: 20px; color: var(--text-muted); }
-
-        #bottom-navbar { bottom: 0; left: 0; width: 100%; height: 70px; background: var(--bg-panel); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; z-index: 20; }
-        .nav-tab { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; height: 100%; justify-content: center; }
-        .nav-tab.active { color: var(--accent-blue); }
-
-        .slide-panel { bottom: 70px; left: 0; width: 100%; background: rgba(30, 32, 34, 0.95); border-top: 1px solid var(--border-color); border-radius: 16px 16px 0 0; padding: 20px 15px; transform: translateY(120%); opacity: 0; visibility: hidden; transition: transform 0.3s; display: flex; gap: 10px; align-items: center; overflow-x: auto; pointer-events: auto; }
-        .slide-panel.show { transform: translateY(0); opacity: 1; visibility: visible; }
-        .shape-swatch { background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-main); min-width: 70px; height: 70px; border-radius: 10px; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; gap: 4px; }
-        .shape-swatch svg { width: 28px; height: 28px; }
-        
-        .action-square { background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-muted); min-width: 65px; height: 65px; border-radius: 10px; font-size: 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-        .action-square span { font-size: 9px; font-weight: 600; margin-top: 4px; }
-        .action-square.active-mode { color: var(--accent-blue); border-color: var(--accent-blue); }
-
-        #color-picker { width: 45px; height: 45px; border: none; border-radius: 50%; background: transparent; cursor: pointer; }
-        
-        #toast { position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: var(--text-main); color: var(--bg-canvas); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 50; }
+        button:active {
+            background: #1d4ed8;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #8b9298;
+            line-height: 1.4;
+        }
     </style>
-
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
 </head>
 <body>
 
-    <div id="home-dashboard">
-        <div class="dash-header">
-            <h1>FORGE 3D</h1>
-            <p>Offline Professional Studio</p>
-        </div>
-        <div class="dash-main">
-            <div class="dash-section">
-                <h2>Workspace</h2>
-                <div class="template-grid">
-                    <div class="template-card" id="tpl-new">
-                        <i class="fa-solid fa-plus"></i>
-                        <h3>Empty Project</h3>
-                        <span>Clean 3D Grid</span>
-                    </div>
-                </div>
-            </div>
-            <div class="dash-section">
-                <h2>Offline Library Engine</h2>
-                <div class="template-grid">
-                    <div class="template-card" id="tpl-import-1">
-                        <i class="fa-solid fa-folder-open"></i>
-                        <h3>Local Import</h3>
-                        <span>Load Custom Character</span>
-                    </div>
-                    <div class="template-card" id="tpl-import-2">
-                        <i class="fa-solid fa-car"></i>
-                        <h3>Local Import</h3>
-                        <span>Load Custom Vehicle</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="dash-footer">Version 3.0 | 100% Offline Engine Active</div>
+    <div class="container">
+        <h2>Firebase Cloud Test 🔥</h2>
+        <p>Sohaib bhai, niche wala button daba kar check karein ke data live cloud par jata hai ya nahi!</p>
+        <button id="btn-test">Send Data to Firebase</button>
+        <div id="status">Status: Waiting for click...</div>
     </div>
-
-    <div id="toast">Message</div>
-
-    <div id="pos-tracker" class="ui-element">X:<span id="pos-x">0.0</span> Y:<span id="pos-y">0.0</span> Z:<span id="pos-z">0.0</span></div>
-
-    <div id="top-transform-bar" class="ui-element">
-        <button class="top-btn active" id="btn-move"><i class="fa-solid fa-arrows-up-down-left-right"></i></button>
-        <button class="top-btn" id="btn-rotate"><i class="fa-solid fa-rotate-right"></i></button>
-        <button class="top-btn" id="btn-scale"><i class="fa-solid fa-expand"></i></button>
-        <div class="v-divider"></div>
-        <button class="top-btn" id="btn-delete"><i class="fa-solid fa-trash"></i></button>
-    </div>
-
-    <button id="menu-toggle" class="ui-element"><i class="fa-solid fa-bars"></i></button>
-
-    <div id="side-menu-panel" class="ui-element">
-        <div class="menu-header">
-            <span class="menu-title">Forge Engine</span>
-            <button id="menu-close"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <button class="menu-link" onclick="window.location.reload()"><i class="fa-solid fa-home"></i>Dashboard</button>
-        <input type="file" id="file-import" accept=".glb,.gltf" style="display: none;">
-        <button class="menu-link" id="btn-import"><i class="fa-solid fa-file-import"></i>Import 3D Asset</button>
-        <button class="menu-link" id="btn-export"><i class="fa-solid fa-file-export"></i>Export Project</button>
-    </div>
-
-    <div class="ui-wrapper">
-        <div id="panel-object" class="slide-panel ui-element">
-            <button class="shape-swatch" id="add-cube"><svg viewBox="0 0 100 100"><polygon points="50 5 95 25 95 75 50 95 5 75 5 25" fill="#e0e0e0" stroke="#a0a0a0" stroke-width="2"/></svg>Cube</button>
-            <button class="shape-swatch" id="add-sphere"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#efefef" stroke="#a0a0a0" stroke-width="2"/></svg>Sphere</button>
-        </div>
-
-        <div id="panel-modeling" class="slide-panel ui-element">
-            <button class="action-square" id="btn-merge"><i class="fa-solid fa-object-group"></i><span>Merge</span></button>
-        </div>
-
-        <div id="panel-rigging" class="slide-panel ui-element">
-            <button class="action-square tool-btn" id="btn-add-bone"><i class="fa-solid fa-bone"></i><span>Add Bone</span></button>
-            <button class="action-square tool-btn" id="btn-bind-skin"><i class="fa-solid fa-link"></i><span>Bind Skin</span></button>
-            <button class="action-square tool-btn" id="btn-edit-bone"><i class="fa-solid fa-arrows-up-down-left-right"></i><span>Rig Editor</span></button>
-            <button class="action-square tool-btn" id="btn-clear-skeleton"><i class="fa-solid fa-skull"></i><span>Clear</span></button>
-        </div>
-
-        <div id="panel-material" class="slide-panel ui-element">
-            <input type="color" id="color-picker" value="#ffffff">
-        </div>
-
-        <div id="bottom-navbar" class="ui-element">
-            <button class="nav-tab" data-target="panel-object"><i class="fa-solid fa-cube"></i><span>OBJECTS</span></button>
-            <button class="nav-tab" data-target="panel-modeling"><i class="fa-solid fa-tools"></i><span>MODELING</span></button>
-            <button class="nav-tab" data-target="panel-rigging"><i class="fa-solid fa-bone"></i><span>RIGGING</span></button>
-            <button class="nav-tab" data-target="panel-material"><i class="fa-solid fa-palette"></i><span>MATERIAL</span></button>
-        </div>
-    </div>
-
-    <div id="canvas-container"></div>
 
     <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { TransformControls } from 'three/addons/controls/TransformControls.js';
-        import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        let scene, camera, renderer, orbitControls, transformControls, raycaster, pointer;
-        let interactableObjects = [], selectedObject = null, appMode = 'DEFAULT'; 
-        let bones = [], boneVisuals = [], skeletonHelper = null, activeSkinnedMesh = null;
+        // Aapke naye screenshot se li gayi 100% original keys
+        const firebaseConfig = {
+            apiKey: "AIzaSyDd2GwU88EOEEjBuJ24sxRlzjpuhRlWEBA",
+            authDomain: "forge-3d-7ee40.firebaseapp.com",
+            projectId: "forge-3d-7ee40",
+            storageBucket: "forge-3d-7ee40.firebasestorage.app",
+            messagingSenderId: "912860530280",
+            appId: "1:912860530280:web:1f0bd05efdd24abf169ddd",
+            measurementId: "G-Z1772PHWR0"
+        };
 
-        const toast = document.getElementById('toast');
-        const topTransformBar = document.getElementById('top-transform-bar');
-        const posX = document.getElementById('pos-x'), posY = document.getElementById('pos-y'), posZ = document.getElementById('pos-z');
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        init();
-        animate();
+        // Click Engine
+        document.getElementById('btn-test').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "Connecting to Google Cloud Servers...";
+            statusDiv.style.color = "#3b82f6";
 
-        function init() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x101112); 
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(6, 4, 8);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-            scene.add(new THREE.GridHelper(30, 30, 0x333333, 0x181a1b));
-            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-            const dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(5, 12, 5); scene.add(dl);
-
-            orbitControls = new OrbitControls(camera, renderer.domElement);
-            orbitControls.enableDamping = true;
-
-            transformControls = new TransformControls(camera, renderer.domElement);
-            transformControls.addEventListener('dragging-changed', (e) => orbitControls.enabled = !e.value);
-            transformControls.addEventListener('change', () => {
-                if(selectedObject) {
-                    updatePosUI(selectedObject.position);
-                    if(selectedObject.isBone && activeSkinnedMesh) activeSkinnedMesh.skeleton.calculateInverses();
-                }
-            });
-            scene.add(transformControls);
-            raycaster = new THREE.Raycaster(); pointer = new THREE.Vector2();
-
-            setupEvents();
-            window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
-            document.addEventListener('pointerdown', onPointerDown);
-        }
-
-        function showToast(msg) { toast.innerText = msg; toast.style.opacity = '1'; setTimeout(() => toast.style.opacity = '0', 2000); }
-        function updatePosUI(pos) { posX.innerText = pos.x.toFixed(1); posY.innerText = pos.y.toFixed(1); posZ.innerText = pos.z.toFixed(1); }
-
-        function triggerImport() {
-            document.getElementById('home-dashboard').style.opacity = '0';
-            setTimeout(() => document.getElementById('home-dashboard').style.display = 'none', 300);
-            document.getElementById('file-import').click();
-        }
-
-        function selectObject(object) {
-            if(appMode === 'ADD_BONE') return;
-            selectedObject = object; transformControls.attach(object); topTransformBar.classList.add('show');
-            updatePosUI(object.position);
-            if(object.material && object.material.color) document.getElementById('color-picker').value = '#' + object.material.color.getHexString();
-        }
-        function deselectObject() { selectedObject = null; transformControls.detach(); topTransformBar.classList.remove('show'); }
-
-        function addBoneAt(position) {
-            const bone = new THREE.Bone();
-            if (bones.length === 0) bone.position.copy(position);
-            else {
-                const parent = bones[bones.length - 1]; parent.add(bone);
-                const localPos = position.clone(); parent.worldToLocal(localPos); bone.position.copy(localPos);
-            }
-            bones.push(bone); scene.add(bones[0]);
-            const marker = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 16), new THREE.MeshBasicMaterial({ color: 0x3b82f6, depthTest: false }));
-            marker.position.copy(position); marker.renderOrder = 999; scene.add(marker); boneVisuals.push(marker);
-            if(skeletonHelper) scene.remove(skeletonHelper);
-            skeletonHelper = new THREE.SkeletonHelper(bones[0]); scene.add(skeletonHelper);
-            showToast("Bone Linked");
-        }
-
-        function bindSkinToMesh() {
-            if(bones.length === 0 || !interactableObjects.length) { showToast("Need bones & mesh!"); return; }
-            const mesh = selectedObject || interactableObjects[0];
-            const geometry = mesh.geometry; const position = geometry.attributes.position;
-            const skinIndices = [], skinWeights = [];
-            for (let i = 0; i < position.count; i++) {
-                const vertex = new THREE.Vector3().fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
-                let distances = [];
-                for (let j = 0; j < bones.length; j++) distances.push({ index: j, dist: vertex.distanceTo(new THREE.Vector3().setFromMatrixPosition(bones[j].matrixWorld)) });
-                distances.sort((a, b) => a.dist - b.dist);
-                skinIndices.push(distances[0].index, 0, 0, 0); skinWeights.push(1.0, 0, 0, 0);
-            }
-            geometry.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(skinIndices, 4));
-            geometry.setAttribute('skinWeight', new THREE.Float32BufferAttribute(skinWeights, 4));
-            const skinnedMesh = new THREE.SkinnedMesh(geometry, mesh.material);
-            skinnedMesh.position.copy(mesh.position); skinnedMesh.add(bones[0]); skinnedMesh.bind(new THREE.Skeleton(bones));
-            scene.remove(mesh); interactableObjects = interactableObjects.filter(o => o !== mesh);
-            scene.add(skinnedMesh); interactableObjects.push(skinnedMesh); activeSkinnedMesh = skinnedMesh;
-            boneVisuals.forEach(v => scene.remove(v)); boneVisuals = [];
-            appMode = 'EDIT_BONE'; updateAppModeUI(); showToast("Skin Bound!");
-        }
-
-        function onPointerDown(event) {
-            if (event.target.closest('.ui-element')) return;
-            document.querySelectorAll('.slide-panel').forEach(p => p.classList.remove('show'));
-            pointer.x = (event.clientX / window.innerWidth) * 2 - 1; pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(pointer, camera);
-            const intersects = raycaster.intersectObjects(appMode === 'EDIT_BONE' ? bones : interactableObjects, true);
-            if (intersects.length > 0) {
-                if(appMode === 'ADD_BONE') addBoneAt(intersects[0].point); else selectObject(intersects[0].object);
-            } else if (!transformControls.dragging) deselectObject();
-        }
-
-        function updateAppModeUI() {
-            document.getElementById('btn-add-bone').classList.toggle('active-mode', appMode === 'ADD_BONE');
-            document.getElementById('btn-edit-bone').classList.toggle('active-mode', appMode === 'EDIT_BONE');
-        }
-
-        function setupEvents() {
-            document.getElementById('tpl-new').addEventListener('click', () => { document.getElementById('home-dashboard').style.display = 'none'; });
-            document.getElementById('tpl-import-1').addEventListener('click', triggerImport);
-            document.getElementById('tpl-import-2').addEventListener('click', triggerImport);
-
-            document.getElementById('menu-toggle').addEventListener('click', () => document.getElementById('side-menu-panel').classList.add('show'));
-            document.getElementById('menu-close').addEventListener('click', () => document.getElementById('side-menu-panel').classList.remove('show'));
-
-            const fileImport = document.getElementById('file-import');
-            document.getElementById('btn-import').addEventListener('click', () => { document.getElementById('side-menu-panel').classList.remove('show'); fileImport.click(); });
-            fileImport.addEventListener('change', (e) => {
-                const file = e.target.files[0]; if(!file) return;
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    new GLTFLoader().parse(event.target.result, '', (gltf) => {
-                        scene.add(gltf.scene);
-                        gltf.scene.traverse((child) => { if (child.isMesh) interactableObjects.push(child); });
-                        showToast("Local Asset Loaded!");
-                    });
-                }; reader.readAsArrayBuffer(file);
-            });
-
-            document.getElementById('btn-export').addEventListener('click', () => {
-                new GLTFExporter().parse(scene, (gltf) => {
-                    const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([JSON.stringify(gltf)], { type: 'text/plain' })); link.download = 'Project.gltf'; link.click();
-                }, () => showToast("Export Error"), { binary: false });
-            });
-
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tp = document.getElementById(tab.getAttribute('data-target'));
-                    const wasOpen = tp.classList.contains('show');
-                    document.querySelectorAll('.slide-panel').forEach(p => p.classList.remove('show'));
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    if(!wasOpen) { tab.classList.add('active'); tp.classList.add('show'); }
+            try {
+                // Yeh data seedha aapke Cloud Firestore mein save hoga
+                await addDoc(collection(db, "forge_3d_users"), {
+                    authorName: "Sohaib Nazir",
+                    projectStatus: "Firebase Connected Successfully",
+                    deviceConnected: "Mobile Infinix Smart 7",
+                    timestamp: new Date()
                 });
-            });
 
-            document.getElementById('btn-move').addEventListener('click', () => transformControls.setMode('translate'));
-            document.getElementById('btn-rotate').addEventListener('click', () => transformControls.setMode('rotate'));
-            document.getElementById('btn-scale').addEventListener('click', () => transformControls.setMode('scale'));
-            document.getElementById('btn-delete').addEventListener('click', () => { if (selectedObject) { scene.remove(selectedObject); interactableObjects = interactableObjects.filter(o => o !== selectedObject); deselectObject(); }});
-            
-            document.getElementById('add-cube').addEventListener('click', () => { const m = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color:0xcccccc})); scene.add(m); interactableObjects.push(m); });
-            document.getElementById('add-sphere').addEventListener('click', () => { const m = new THREE.Mesh(new THREE.SphereGeometry(0.5,32,32), new THREE.MeshStandardMaterial({color:0xcccccc})); scene.add(m); interactableObjects.push(m); });
-            
-            document.getElementById('btn-add-bone').addEventListener('click', () => { appMode = appMode === 'ADD_BONE' ? 'DEFAULT' : 'ADD_BONE'; deselectObject(); updateAppModeUI(); });
-            document.getElementById('btn-bind-skin').addEventListener('click', bindSkinToMesh);
-            document.getElementById('btn-edit-bone').addEventListener('click', () => { appMode = appMode === 'EDIT_BONE' ? 'DEFAULT' : 'EDIT_BONE'; updateAppModeUI(); });
-            document.getElementById('btn-clear-skeleton').addEventListener('click', () => { bones.forEach(b => scene.remove(b)); bones=[]; if(skeletonHelper) scene.remove(skeletonHelper); skeletonHelper=null; appMode='DEFAULT'; updateAppModeUI(); });
-            document.getElementById('color-picker').addEventListener('input', (e) => { if (selectedObject && selectedObject.material) selectedObject.material.color.set(e.target.value); });
-        }
-
-        function animate() { requestAnimationFrame(animate); orbitControls.update(); renderer.render(scene, camera); }
+                statusDiv.innerText = "🎉 MUBARAK HO! Data cloud par chala gaya! Firebase 100% active hai.";
+                statusDiv.style.color = "#10b981";
+                alert("Success! Your test data has reached Firebase Cloud!");
+                
+            } catch (error) {
+                console.error("Firebase Error: ", error);
+                statusDiv.innerText = "Error: Database rules are likely blocking write access. We will fix rules next.";
+                statusDiv.style.color = "#ef4444";
+            }
+        });
     </script>
 </body>
 </html>
