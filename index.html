@@ -16,7 +16,7 @@
             --text-main: #ffffff;      
             --text-muted: #8b9298;     
             --accent-blue: #3b82f6;    
-            --border-color: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.08);
             --bg-menu: rgba(20, 22, 24, 0.98);
         }
 
@@ -51,25 +51,27 @@
         .dash-sidebar h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); letter-spacing: 1px; }
         .dash-sidebar p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
         .dash-main {
-            flex: 1; padding: 60px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 30px;
+            flex: 1; padding: 40px 60px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 35px;
         }
-        .dash-main h2 { font-size: 1.4rem; color: var(--text-main); font-weight: 600; }
+        .dash-section { display: flex; flex-direction: column; gap: 15px; }
+        .dash-section h2 { font-size: 1.2rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        
         .template-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;
         }
         .template-card {
             background: var(--bg-panel); border: 1px solid var(--border-color);
-            border-radius: 12px; padding: 30px 20px; cursor: pointer;
-            transition: all 0.2s ease; display: flex; flex-direction: column; align-items: flex-start; gap: 15px;
+            border-radius: 12px; padding: 24px 20px; cursor: pointer;
+            transition: all 0.2s ease; display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
         }
         .template-card:hover {
             background: var(--bg-hover); border-color: var(--accent-blue);
             transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
-        .template-card i { font-size: 32px; color: var(--accent-blue); }
-        .template-card h3 { font-size: 1.1rem; color: var(--text-main); font-weight: 600; }
-        .template-card span { font-size: 0.85rem; color: var(--text-muted); }
+        .template-card i { font-size: 28px; color: var(--accent-blue); }
+        .template-card h3 { font-size: 1.05rem; color: var(--text-main); font-weight: 600; }
+        .template-card span { font-size: 0.8rem; color: var(--text-muted); }
 
         /* --- LIVE POSITIONAL DATA TRACKER --- */
         #pos-tracker {
@@ -95,6 +97,18 @@
             display: none; 
         }
         #top-transform-bar.show { display: flex; }
+
+        .top-btn {
+            background: transparent; border: none;
+            color: var(--text-muted); font-size: 18px;
+            width: 45px; height: 45px; border-radius: 8px;
+            cursor: pointer; transition: all 0.2s ease;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .top-btn:hover { background: var(--bg-hover); color: var(--text-main); }
+        .top-btn.active { color: var(--accent-blue); background: rgba(59, 130, 246, 0.15); box-shadow: inset 0 0 0 1px var(--accent-blue); }
+        .top-btn.delete:hover { color: #ff4757; background: rgba(255, 71, 87, 0.1); }
+        .v-divider { width: 1px; background: var(--border-color); margin: 6px 2px; }
 
         /* --- MENU TOGGLE --- */
         #menu-toggle {
@@ -205,7 +219,7 @@
         {
             "imports": {
                 "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+                "three/addons/"]: "https://unpkg.com/three@0.160.0/examples/jsm/"
             }
         }
     </script>
@@ -219,31 +233,50 @@
                 <p style="margin-top: 10px;">Professional 3D Modeling & Rigging Suite.</p>
             </div>
             <div style="margin-top: auto;">
-                <p>Version 2.0.1<br>Asset Library Engine Active</p>
+                <p>Version 2.0.2<br>Asset Library Engine Active</p>
             </div>
         </div>
         <div class="dash-main">
-            <h2>Start a New Project</h2>
-            <div class="template-grid">
-                <div class="template-card" id="tpl-new">
-                    <i class="fa-solid fa-plus"></i>
-                    <h3>New Project</h3>
-                    <span>Clean empty grid space</span>
+            <div class="dash-section">
+                <h2>Workspace Initialization</h2>
+                <div class="template-grid">
+                    <div class="template-card" id="tpl-new">
+                        <i class="fa-solid fa-plus"></i>
+                        <h3>New Empty Project</h3>
+                        <span>Clean layout grid system</span>
+                    </div>
                 </div>
-                <div class="template-card" id="tpl-character">
-                    <i class="fa-solid fa-user-astronaut"></i>
-                    <h3>Custom Character</h3>
-                    <span>Bipedal humanoid rig</span>
+            </div>
+
+            <div class="dash-section">
+                <h2>Characters Rigging Studio</h2>
+                <div class="template-grid">
+                    <div class="template-card" id="tpl-char-1">
+                        <i class="fa-solid fa-user-ninja"></i>
+                        <h3>Standard Gray Dummy</h3>
+                        <span>Pro low-poly rigging dummy</span>
+                    </div>
+                    <div class="template-card" id="tpl-char-2">
+                        <i class="fa-solid fa-robot"></i>
+                        <h3>Anatomy Robot Biped</h3>
+                        <span>Mechanical segmented character</span>
+                    </div>
                 </div>
-                <div class="template-card" id="tpl-vehicle">
-                    <i class="fa-solid fa-car"></i>
-                    <h3>Vehicle Suite</h3>
-                    <span>Chassis & 4 wheels</span>
-                </div>
-                <div class="template-card" id="tpl-flight">
-                    <i class="fa-solid fa-plane"></i>
-                    <h3>Flight / Airplane</h3>
-                    <span>Aerodynamic model</span>
+            </div>
+
+            <div class="dash-section">
+                <h2>Vehicles & Mechanical Hub</h2>
+                <div class="template-grid">
+                    <div class="template-card" id="tpl-veh-1">
+                        <i class="fa-solid fa-car-side"></i>
+                        <h3>Sports Racing Car</h3>
+                        <span>Aerodynamic body design</span>
+                    </div>
+                    <div class="template-card" id="tpl-veh-2">
+                        <i class="fa-solid fa-truck-monster"></i>
+                        <h3>Concept Mini Rover</h3>
+                        <span>Compact structured automation</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -335,7 +368,7 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 
-        // --- Core Application States ---
+        // --- Core Variables ---
         let scene, camera, renderer;
         let orbitControls, transformControls;
         let raycaster, pointer;
@@ -344,13 +377,13 @@
         let selectedObject = null;
         let appMode = 'DEFAULT'; 
 
-        // Skeleton/Skin Engine Trackers
+        // Rigging System
         let bones = [];
         let boneVisuals = [];
         let skeletonHelper = null;
         let activeSkinnedMesh = null;
 
-        // UI Selectors
+        // UI Target Hooks
         const toast = document.getElementById('toast');
         const topTransformBar = document.getElementById('top-transform-bar');
         const posX = document.getElementById('pos-x'), posY = document.getElementById('pos-y'), posZ = document.getElementById('pos-z');
@@ -362,7 +395,7 @@
         const sideMenuPanel = document.getElementById('side-menu-panel');
         const homeDashboard = document.getElementById('home-dashboard');
 
-        // --- Bootstrap Application ---
+        // --- App Bootloader ---
         init();
         animate();
 
@@ -382,13 +415,13 @@
             const gridHelper = new THREE.GridHelper(30, 30, 0x333333, 0x181a1b);
             scene.add(gridHelper);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
             scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 10, 5);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.85);
+            directionalLight.position.set(5, 12, 5);
             scene.add(directionalLight);
 
-            // --- FLUID CAMERA MOTION DRIVERS ---
+            // --- NAVIGATION DRIVERS ---
             orbitControls = new OrbitControls(camera, renderer.domElement);
             orbitControls.rotateSpeed = 0.25;
             orbitControls.zoomSpeed = 0.4;
@@ -397,7 +430,7 @@
             orbitControls.dampingFactor = 0.05;
             orbitControls.maxPolarAngle = Math.PI / 2.1; 
 
-            // --- TRANSFORM ENGINE GIZMOS ---
+            // --- RUNTIME TRANSFORM CONTROLS ---
             transformControls = new TransformControls(camera, renderer.domElement);
             transformControls.addEventListener('dragging-changed', function (event) {
                 orbitControls.enabled = !event.value; 
@@ -440,7 +473,7 @@
             interactableObjects = [];
         }
 
-        // --- ASSET MODEL TEMPLATES CREATOR ENGINE ---
+        // --- ASSET GENERATOR SWITCH ENGINE ---
         function addShape(type) {
             let geometry, yOffset = 0.75; 
             if (type === 'cube') geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5, 10, 10, 10);
@@ -456,86 +489,45 @@
             showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} Added`);
         }
 
-        function spawnHumanoidCharacter() {
-            clearSceneObjects();
-            const mat = new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.4 });
-            const bodyGroup = new THREE.Group();
+        // --- ENGINE ASSET LOADER (ISOLATED EXECUTION) ---
+        function executeGltfInjection(url, type) {
+            clearSceneObjects(); 
+            showToast(`Loading 3D ${type}...`);
+            
+            const loader = new GLTFLoader();
+            loader.load(url, function(gltf) {
+                const importedScene = gltf.scene;
+                scene.add(importedScene);
+                
+                importedScene.traverse((child) => {
+                    if (child.isMesh) {
+                        interactableObjects.push(child);
+                        // Standardize basic lighting look for better visibility
+                        if(!child.material.map) {
+                            child.material = new THREE.MeshStandardMaterial({
+                                color: child.material.color || 0xbbbbbb,
+                                roughness: 0.4,
+                                metalness: 0.1
+                            });
+                        }
+                    }
+                });
 
-            const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6, 4, 4, 4), new THREE.MeshStandardMaterial({ color: 0xfca5a5 }));
-            head.position.set(0, 3.0, 0); head.name = "Head"; bodyGroup.add(head); interactableObjects.push(head);
-
-            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.4, 0.6, 6, 6, 4), new THREE.MeshStandardMaterial({ color: 0x3b82f6 }));
-            torso.position.set(0, 1.9, 0); torso.name = "Torso"; bodyGroup.add(torso); interactableObjects.push(torso);
-
-            const armL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3, 4, 6, 4), mat);
-            armL.position.set(-0.7, 1.9, 0); armL.name = "Left_Arm"; bodyGroup.add(armL); interactableObjects.push(armL);
-
-            const armR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.2, 0.3, 4, 6, 4), mat);
-            armR.position.set(0.7, 1.9, 0); armR.name = "Right_Arm"; bodyGroup.add(armR); interactableObjects.push(armR);
-
-            const legL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.2, 0.35, 4, 6, 4), mat);
-            legL.position.set(-0.25, 0.6, 0); legL.name = "Left_Leg"; bodyGroup.add(legL); interactableObjects.push(legL);
-
-            const legR = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.2, 0.35, 4, 6, 4), mat);
-            legR.position.set(0.25, 0.6, 0); legR.name = "Right_Leg"; bodyGroup.add(legR); interactableObjects.push(legR);
-
-            scene.add(bodyGroup);
-            camera.position.set(0, 3, 6); orbitControls.target.set(0, 1.8, 0);
-            showToast("Humanoid Character Created");
-        }
-
-        function spawnVehicleSuite() {
-            clearSceneObjects();
-            const carGroup = new THREE.Group();
-            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.5, roughness: 0.2 });
-            const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.8 });
-
-            const chassis = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.6, 3.5), bodyMat);
-            chassis.position.set(0, 0.6, 0); chassis.name = "Chassis"; carGroup.add(chassis); interactableObjects.push(chassis);
-
-            const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.6, 1.8), new THREE.MeshStandardMaterial({ color: 0x111827 }));
-            cabin.position.set(0, 1.2, -0.2); cabin.name = "Cabin"; carGroup.add(cabin); interactableObjects.push(cabin);
-
-            const wheelPositions = [
-                {x: -1.0, y: 0.4, z: 1.0}, {x: 1.0, y: 0.4, z: 1.0},
-                {x: -1.0, y: 0.4, z: -1.0}, {x: 1.0, y: 0.4, z: -1.0}
-            ];
-            wheelPositions.forEach((pos, idx) => {
-                const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 24);
-                wheelGeo.rotateZ(Math.PI / 2);
-                const wheel = new THREE.Mesh(wheelGeo, wheelMat);
-                wheel.position.set(pos.x, pos.y, pos.z); wheel.name = `Wheel_${idx+1}`;
-                carGroup.add(wheel); interactableObjects.push(wheel);
+                // Set dynamic target focus parameters
+                if(type === 'Character') {
+                    camera.position.set(0, 2.2, 4.5);
+                    orbitControls.target.set(0, 1.0, 0);
+                } else {
+                    camera.position.set(4, 3, 5);
+                    orbitControls.target.set(0, 0.4, 0);
+                }
+                showToast(`${type} Loaded Perfectly!`);
+            }, undefined, function(err) {
+                showToast("Network Error fetching asset.");
             });
-
-            scene.add(carGroup);
-            camera.position.set(5, 4, 6); orbitControls.target.set(0, 0.6, 0);
-            showToast("Mechanical Vehicle Loaded");
         }
 
-        function spawnAirplaneFlight() {
-            clearSceneObjects();
-            const planeGroup = new THREE.Group();
-            const mat = new THREE.MeshStandardMaterial({ color: 0xe5e7eb, metalness: 0.3, roughness: 0.3 });
-
-            const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.3, 3.5, 16), mat);
-            fuselage.rotateX(Math.PI / 2); fuselage.position.set(0, 1.0, 0); fuselage.name = "Fuselage";
-            planeGroup.add(fuselage); interactableObjects.push(fuselage);
-
-            const wingMain = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.08, 0.8), mat);
-            wingMain.position.set(0, 1.0, 0.3); wingMain.name = "Main_Wings";
-            planeGroup.add(wingMain); interactableObjects.push(wingMain);
-
-            const tailFin = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.8, 0.5), mat);
-            tailFin.position.set(0, 1.4, -1.5); tailFin.name = "Tail_Fin";
-            planeGroup.add(tailFin); interactableObjects.push(tailFin);
-
-            scene.add(planeGroup);
-            camera.position.set(12, 6, 12); orbitControls.target.set(0, 1.0, 0);
-            showToast("Flight Simulation Plane Loaded");
-        }
-
-        // --- SELECTION RAYCAST ROUTING ---
+        // --- Selection Mechanics ---
         function selectObject(object) {
             if(appMode === 'ADD_BONE') return;
             selectedObject = object; transformControls.attach(object); topTransformBar.classList.add('show');
@@ -550,7 +542,7 @@
             updatePosUI(new THREE.Vector3(0,0,0));
         }
 
-        // --- ASYNC RIGGING & VERTEX SKINNING ENGINE ---
+        // --- ASYNC RIGGING ENGINE ---
         function addBoneAt(position) {
             const bone = new THREE.Bone();
             if (bones.length === 0) { bone.position.copy(position); } 
@@ -623,7 +615,7 @@
             showToast("Skeleton Cleared");
         }
 
-        // --- GLTF NATIVE INTERPOLATION IMPORT / EXPORT SYSTEM ---
+        // --- GLTF EXPORTER ---
         function exportGLTF() {
             const exporter = new GLTFExporter();
             exporter.parse(scene, function (gltf) {
@@ -637,7 +629,7 @@
             }, function (error) { showToast("Export Error!"); }, { binary: false });
         }
 
-        // --- Screen Event Hub ---
+        // --- Global Router Click Handler ---
         function onPointerDown(event) {
             if (event.target.closest('.ui-element')) return;
             document.querySelectorAll('.slide-panel').forEach(p => p.classList.remove('show'));
@@ -674,10 +666,28 @@
                 setTimeout(() => homeDashboard.style.display = 'none', 300);
             };
 
+            // Dashboard Router Maps (STRICT ISOLATION)
             document.getElementById('tpl-new').addEventListener('click', () => { clearSceneObjects(); addShape('cube'); closeDash(); });
-            document.getElementById('tpl-character').addEventListener('click', () => { spawnHumanoidCharacter(); closeDash(); });
-            document.getElementById('tpl-vehicle').addEventListener('click', () => { spawnVehicleSuite(); closeDash(); });
-            document.getElementById('tpl-flight').addEventListener('click', () => { spawnAirplaneFlight(); closeDash(); });
+            
+            // Characters (Premium Clean Assets)
+            document.getElementById('tpl-char-1').addEventListener('click', () => { 
+                executeGltfInjection('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RiggedFigure/glTF-Embedded/RiggedFigure.gltf', 'Character'); 
+                closeDash(); 
+            });
+            document.getElementById('tpl-char-2').addEventListener('click', () => { 
+                executeGltfInjection('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/RiggedSimple/glTF-Embedded/RiggedSimple.gltf', 'Character'); 
+                closeDash(); 
+            });
+
+            // Vehicles (Premium Clean Assets)
+            document.getElementById('tpl-veh-1').addEventListener('click', () => { 
+                executeGltfInjection('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/ToyCar/glTF-Embedded/ToyCar.gltf', 'Vehicle'); 
+                closeDash(); 
+            });
+            document.getElementById('tpl-veh-2').addEventListener('click', () => { 
+                executeGltfInjection('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Lantern/glTF-Embedded/Lantern.gltf', 'Prop Object'); 
+                closeDash(); 
+            });
 
             document.getElementById('btn-dashboard-home').addEventListener('click', () => {
                 sideMenuPanel.classList.remove('show');
@@ -701,7 +711,7 @@
                     loader.parse(contents, '', function(gltf) {
                         const importedModel = gltf.scene; scene.add(importedModel);
                         importedModel.traverse((child) => { if (child.isMesh) interactableObjects.push(child); });
-                        selectObject(importedModel.children[0] || importedModel); showToast("Asset Loaded Successfully!");
+                        selectObject(importedModel.children[0] || importedModel); showToast("Asset Loaded!");
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -732,7 +742,7 @@
             document.getElementById('add-cube').addEventListener('click', () => addShape('cube'));
             document.getElementById('add-sphere').addEventListener('click', () => addShape('sphere'));
             document.getElementById('add-cylinder').addEventListener('click', () => addShape('cylinder'));
-                document.getElementById('add-plane').addEventListener('click', () => addShape('plane'));
+            document.getElementById('add-plane').addEventListener('click', () => addShape('plane'));
             document.getElementById('add-pyramid').addEventListener('click', () => addShape('pyramid'));
 
             document.getElementById('btn-merge').addEventListener('click', () => {
