@@ -14,7 +14,7 @@
         }
 
         body {
-            background-color: #0b0f19; /* Deep premium dark blue */
+            background-color: #0b0f19;
             color: #e2e8f0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
@@ -134,7 +134,7 @@
             color: white;
             font-size: 15px;
             outline: none;
-            user-select: auto; /* Typing ke liye allow */
+            user-select: auto;
         }
 
         .prompt-input::placeholder {
@@ -162,7 +162,8 @@
 
         .send-icon {
             font-size: 18px;
-            margin-left: 2px; /* Slight optical adjustment */
+            /* Rocket ko bilkul center mein lane ke liye yeh fix kiya hai */
+            transform: translateY(-2px); 
         }
     </style>
 </head>
@@ -197,7 +198,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // Verified Firebase Keys
         const firebaseConfig = {
             apiKey: "AIzaSyDd2GwU88EOEEjBuJ24sxRlzjpuhRlWEBA",
             authDomain: "forge-3d-7ee40.firebaseapp.com",
@@ -217,17 +217,15 @@
 
         async function sendPrompt() {
             const text = promptInput.value.trim();
-            if (!text) return; // Khali message na bheje
+            if (!text) return;
 
-            // UI update - Sending state
             displayMsg.innerHTML = `
                 <span class="display-icon">⏳</span>
                 <p style="color: #3b82f6; font-weight: 500;">Processing command...</p>
             `;
-            promptInput.value = ""; // Input saaf kar do
+            promptInput.value = ""; 
 
             try {
-                // Firebase Data Save
                 await addDoc(collection(db, "forge_3d_prompts"), {
                     commandText: text,
                     user: "Sohaib Nazir",
@@ -235,7 +233,6 @@
                     timestamp: new Date()
                 });
 
-                // UI update - Success state
                 displayMsg.innerHTML = `
                     <span class="display-icon">✅</span>
                     <h3 style="color: #10b981; margin-bottom: 8px;">Command Sent!</h3>
@@ -250,10 +247,8 @@
             }
         }
 
-        // Button Click se bhejna
         sendBtn.addEventListener('click', sendPrompt);
 
-        // Keyboard 'Enter' dabane se bhejna
         promptInput.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 sendPrompt();
