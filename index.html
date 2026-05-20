@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forge 3D - Cloud Engine</title>
+    <title>Forge 3D - AI Cloud Engine</title>
     <style>
+        /* Base Reset */
         * {
             margin: 0;
             padding: 0;
@@ -13,146 +14,181 @@
         }
 
         body {
-            background-color: #0d0f12;
+            background-color: #0b0f19; /* Deep premium dark blue */
             color: #e2e8f0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
-        /* Top Bar */
-        .top-bar {
-            background: #15181e;
-            height: 55px;
+        /* 1. Top Header */
+        .header {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 15px;
-            border-bottom: 1px solid #232834;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
         }
 
-        .logo {
-            font-weight: bold;
-            font-size: 18px;
-            color: #3b82f6;
-            letter-spacing: 0.5px;
+        .brand {
+            font-weight: 800;
+            font-size: 20px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
         }
 
-        .status-container {
+        .status-badge {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: rgba(16, 185, 129, 0.1);
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
             border: 1px solid rgba(16, 185, 129, 0.2);
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
         }
 
-        .status-dot {
+        .pulse-dot {
             width: 8px;
             height: 8px;
             background-color: #10b981;
             border-radius: 50%;
-            box-shadow: 0 0 8px #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 2s infinite;
         }
 
-        /* Canvas Display Area */
-        .canvas-container {
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* 2. Main Display Area */
+        .display-area {
             flex: 1;
-            position: relative;
-            background: radial-gradient(circle, #1a1f29 0%, #0d0f12 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #display-screen {
-            text-align: center;
-            color: #64748b;
-            font-size: 15px;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .highlight-text {
-            color: #3b82f6;
-            font-weight: bold;
-        }
-
-        /* Bottom Toolbar */
-        .bottom-toolbar {
-            background: #15181e;
-            padding: 15px;
-            border-top: 1px solid #232834;
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .tool-btn {
-            background: #1e2430;
-            color: #cbd5e1;
-            border: 1px solid #2d3648;
-            padding: 14px 8px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+            justify-content: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%);
+            text-align: center;
+            overflow-y: auto;
         }
 
-        .tool-btn:active {
+        .message-box {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 16px;
+            max-width: 90%;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .display-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* 3. Professional Prompt Input Area */
+        .prompt-section {
+            padding: 15px 20px 25px 20px;
+            background: #0f172a;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 30px;
+            padding: 5px 5px 5px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .prompt-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            user-select: auto; /* Typing ke liye allow */
+        }
+
+        .prompt-input::placeholder {
+            color: #64748b;
+        }
+
+        .send-btn {
             background: #3b82f6;
             color: white;
-            border-color: #3b82f6;
-            transform: scale(0.95);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
         }
 
-        .btn-icon {
-            font-size: 20px;
+        .send-btn:active {
+            transform: scale(0.9);
+            background: #2563eb;
+        }
+
+        .send-icon {
+            font-size: 18px;
+            margin-left: 2px; /* Slight optical adjustment */
         }
     </style>
 </head>
 <body>
 
-    <header class="top-bar">
-        <div class="logo">FORGE 3D</div>
-        <div class="status-container">
-            <div class="status-dot"></div>
-            <span style="font-size: 12px; color: #10b981; font-weight: 600;">Firebase Live</span>
+    <header class="header">
+        <div class="brand">FORGE 3D</div>
+        <div class="status-badge">
+            <div class="pulse-dot"></div>
+            <span>Cloud Sync</span>
         </div>
     </header>
 
-    <main class="canvas-container">
-        <div id="display-screen">
-            <p id="cloud-msg">Neeche se koi bhi shape add karein...<br>Woh live <span class="highlight-text">Firebase Database</span> par save ho jayegi!</p>
+    <main class="display-area">
+        <div class="message-box" id="display-msg">
+            <span class="display-icon">✨</span>
+            <h3 style="color: #e2e8f0; margin-bottom: 8px;">AI Command Center</h3>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.5;">Neeche command likhein (Jaise: "Create a blue cube") aur cloud par bhejein.</p>
         </div>
     </main>
 
-    <footer class="bottom-toolbar">
-        <div class="tools-grid">
-            <button class="tool-btn" id="btn-cube">
-                <span class="btn-icon">📦</span>
-                <span>Add Cube</span>
-            </button>
-            <button class="tool-btn" id="btn-sphere">
-                <span class="btn-icon">🔵</span>
-                <span>Add Sphere</span>
-            </button>
-            <button class="tool-btn" id="btn-cone">
-                <span class="btn-icon">📐</span>
-                <span>Add Cone</span>
+    <footer class="prompt-section">
+        <div class="input-wrapper">
+            <input type="text" id="prompt-input" class="prompt-input" placeholder="Type your 3D prompt here..." autocomplete="off">
+            <button class="send-btn" id="send-btn">
+                <span class="send-icon">🚀</span>
             </button>
         </div>
     </footer>
@@ -161,7 +197,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // Aapki Verified Firebase Keys
+        // Verified Firebase Keys
         const firebaseConfig = {
             apiKey: "AIzaSyDd2GwU88EOEEjBuJ24sxRlzjpuhRlWEBA",
             authDomain: "forge-3d-7ee40.firebaseapp.com",
@@ -175,35 +211,54 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const displayScreen = document.getElementById('cloud-msg');
+        const promptInput = document.getElementById('prompt-input');
+        const sendBtn = document.getElementById('send-btn');
+        const displayMsg = document.getElementById('display-msg');
 
-        // Data Bhejne Ka Universal Function
-        async function sendShapeToFirebase(shapeName, shapeEmoji) {
-            displayScreen.innerHTML = `Sending <span style="color:#3b82f6;">${shapeName}</span> to Firebase Cloud... ⏳`;
-            
+        async function sendPrompt() {
+            const text = promptInput.value.trim();
+            if (!text) return; // Khali message na bheje
+
+            // UI update - Sending state
+            displayMsg.innerHTML = `
+                <span class="display-icon">⏳</span>
+                <p style="color: #3b82f6; font-weight: 500;">Processing command...</p>
+            `;
+            promptInput.value = ""; // Input saaf kar do
+
             try {
-                await addDoc(collection(db, "forge_3d_shapes"), {
-                    shapeType: shapeName,
-                    createdBy: "Sohaib Nazir",
+                // Firebase Data Save
+                await addDoc(collection(db, "forge_3d_prompts"), {
+                    commandText: text,
+                    user: "Sohaib Nazir",
                     device: "Infinix Smart 7",
-                    status: "Saved Successfully",
-                    time: new Date()
+                    timestamp: new Date()
                 });
 
-                displayScreen.innerHTML = `
-                    <span style="font-size: 40px;">${shapeEmoji}</span><br>
-                    <span style="color: #10b981; font-weight: bold; font-size: 16px;">🎉 SUCCESS!</span><br>
-                    आपका <span style="color: white; font-weight:bold;">${shapeName}</span> live Firebase server par save ho gaya hai!
+                // UI update - Success state
+                displayMsg.innerHTML = `
+                    <span class="display-icon">✅</span>
+                    <h3 style="color: #10b981; margin-bottom: 8px;">Command Sent!</h3>
+                    <p style="color: #e2e8f0; font-size: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">"${text}"</p>
+                    <p style="color: #94a3b8; font-size: 12px; margin-top: 10px;">Cloud database mein save ho gaya.</p>
                 `;
             } catch (error) {
-                displayScreen.innerHTML = `<span style="color: #ef4444;">Error: ${error.message}</span>`;
+                displayMsg.innerHTML = `
+                    <span class="display-icon">❌</span>
+                    <p style="color: #ef4444;">Connection Error: ${error.message}</p>
+                `;
             }
         }
 
-        // Buttons Click Listeners
-        document.getElementById('btn-cube').addEventListener('click', () => sendShapeToFirebase("Cube Box", "📦"));
-        document.getElementById('btn-sphere').addEventListener('click', () => sendShapeToFirebase("Sphere Ball", "🔵"));
-        document.getElementById('btn-cone').addEventListener('click', () => sendShapeToFirebase("Cone Pyramid", "📐"));
+        // Button Click se bhejna
+        sendBtn.addEventListener('click', sendPrompt);
+
+        // Keyboard 'Enter' dabane se bhejna
+        promptInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendPrompt();
+            }
+        });
     </script>
 </body>
 </html>
