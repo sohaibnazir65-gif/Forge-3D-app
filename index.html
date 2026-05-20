@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forge 3D - Prisma UI</title>
+    <title>Forge 3D - Pro Prisma Controls</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         
-        /* Video jaisa dark grey background */
         body { 
             background-color: #2c2c2c; 
             overflow: hidden; 
@@ -25,7 +24,7 @@
             z-index: 1;
         }
 
-        /* Top Right Menu Icon (Video Jaisa) */
+        /* Top Right Menu Icon */
         .top-menu {
             position: absolute;
             top: 15px;
@@ -38,7 +37,39 @@
             border: 1px solid #444;
         }
 
-        /* Left Side Toolbar (Video jaisa) */
+        /* NEW: Top Center Transform Mode Toolbar */
+        .transform-toolbar {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            background: rgba(40, 40, 40, 0.9);
+            border: 1px solid #444;
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .t-btn {
+            background: transparent;
+            border: none;
+            color: #a3a3a3;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-right: 1px solid #444;
+        }
+        .t-btn:last-child { border-right: none; }
+
+        .t-btn.active {
+            background: #f59e0b; /* Orange active state like Prisma */
+            color: #fff;
+        }
+
+        /* Left Side Shapes Toolbar */
         .left-toolbar {
             position: absolute;
             bottom: 30px;
@@ -62,35 +93,22 @@
             transition: all 0.2s;
         }
 
-        .tool-btn:active {
-            background: #444;
-            border-color: #f59e0b; /* Orange highlight like video */
-        }
+        .tool-btn:active { background: #444; border-color: #f59e0b; }
+        .tool-btn svg { width: 22px; height: 22px; stroke: #a3a3a3; fill: none; stroke-width: 1.5; }
+        .tool-btn:active svg { stroke: #f59e0b; }
 
-        .tool-btn svg {
-            width: 22px;
-            height: 22px;
-            stroke: #a3a3a3;
-            fill: none;
-            stroke-width: 1.5;
-        }
-
-        .tool-btn:active svg {
-            stroke: #f59e0b; /* Orange icon on tap */
-        }
-
-        /* Sync Status indicator (Small & Unobtrusive) */
+        /* Sync Status indicator */
         .sync-status {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            font-size: 10px;
+            bottom: 15px;
+            right: 15px;
+            font-size: 11px;
             color: #10b981;
             z-index: 10;
-            background: rgba(0,0,0,0.4);
-            padding: 4px 8px;
+            background: rgba(0,0,0,0.6);
+            padding: 4px 10px;
             border-radius: 4px;
-            display: none; /* Only shows when saving */
+            display: none; 
         }
     </style>
 </head>
@@ -100,6 +118,12 @@
 
     <div class="top-menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </div>
+
+    <div class="transform-toolbar">
+        <button class="t-btn active" id="mode-translate">Move</button>
+        <button class="t-btn" id="mode-rotate">Rotate</button>
+        <button class="t-btn" id="mode-scale">Scale</button>
     </div>
 
     <div id="canvas-container"></div>
@@ -137,10 +161,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- Video Jaisa 3D Setup ---
+        // --- 3D Engine Setup ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        // Background color directly matching the video
         scene.background = new THREE.Color(0x2c2c2c); 
         
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -151,35 +174,35 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         container.appendChild(renderer.domElement);
 
-        // Video jaisa Grid (Darker with fine lines)
+        // Dark Grid Helper
         const gridHelper = new THREE.GridHelper(30, 30, 0x555555, 0x3a3a3a);
         gridHelper.position.y = -1;
         scene.add(gridHelper);
 
-        // Lights
+        // Studio Lights
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(ambientLight);
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
         dirLight.position.set(5, 10, 5);
         scene.add(dirLight);
 
-        // Orbit Controls (For Camera Rotation)
+        // Camera Orbit Controls
         const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
         orbitControls.enableDamping = true;
         orbitControls.dampingFactor = 0.05;
 
-        // Prisma Gizmo (TransformControls)
+        // --- FIXED MOBILE TOUCH TRANSFORM CONTROLS ---
         const transformControls = new THREE.TransformControls(camera, renderer.domElement);
-        transformControls.setMode('translate'); 
+        transformControls.setSize(1.5); // Gizmo size bada kiya mobile ke liye
         scene.add(transformControls);
 
+        // Jab user arrow ko pakre toh camera ghumna band ho jaye (Smooth Fix)
         transformControls.addEventListener('dragging-changed', function (event) {
             orbitControls.enabled = !event.value;
         });
 
         let currentMesh = null;
 
-        // Window Resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -193,7 +216,24 @@
         }
         animate();
 
-        // --- Button Clicks & Firebase Logic ---
+        // --- Move, Rotate, Scale Mode Switch Logic ---
+        const btnTranslate = document.getElementById('mode-translate');
+        const btnRotate = document.getElementById('mode-rotate');
+        const btnScale = document.getElementById('mode-scale');
+
+        function setTransformMode(mode, activeBtn) {
+            transformControls.setMode(mode);
+            btnTranslate.classList.remove('active');
+            btnRotate.classList.remove('active');
+            btnScale.classList.remove('active');
+            activeBtn.classList.add('active');
+        }
+
+        btnTranslate.addEventListener('click', () => setTransformMode('translate', btnTranslate));
+        btnRotate.addEventListener('click', () => setTransformMode('rotate', btnRotate));
+        btnScale.addEventListener('click', () => setTransformMode('scale', btnScale));
+
+        // --- Shape Creation & Firebase Sync ---
         const syncStatus = document.getElementById('sync-status');
 
         async function createShape(shapeType) {
@@ -203,7 +243,6 @@
             }
 
             let geometry;
-            // Pure white material like the video
             let material = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.1 });
 
             if (shapeType === 'Cube') geometry = new THREE.BoxGeometry(2, 2, 2);
@@ -211,35 +250,34 @@
             else if (shapeType === 'Cylinder') geometry = new THREE.CylinderGeometry(1, 1, 2.5, 32);
 
             currentMesh = new THREE.Mesh(geometry, material);
-            currentMesh.position.y = 0; // Spawn exactly in center
+            currentMesh.position.y = 0;
             scene.add(currentMesh);
 
-            // Attach the red/green/blue arrows
+            // Shape ke upar nishaniyan laga do aur Move mode par reset kardo
             transformControls.attach(currentMesh);
+            setTransformMode('translate', btnTranslate);
 
-            // Firebase Save 
             syncStatus.style.display = 'block';
             syncStatus.innerText = 'Syncing...';
-            syncStatus.style.color = '#f59e0b'; // Orange syncing
+            syncStatus.style.color = '#f59e0b';
 
             try {
                 await addDoc(collection(db, "forge_3d_prisma_runs"), {
-                    userInput: `Button Click: ${shapeType}`,
+                    userInput: `Generated: ${shapeType}`,
                     detectedObject: `3D ${shapeType}`,
                     author: "Sohaib Nazir",
                     timestamp: new Date()
                 });
                 syncStatus.innerText = 'Synced ✅';
-                syncStatus.style.color = '#10b981'; // Green success
+                syncStatus.style.color = '#10b981';
                 setTimeout(() => { syncStatus.style.display = 'none'; }, 2000);
             } catch (error) {
-                syncStatus.innerText = 'Sync Error!';
+                syncStatus.innerText = 'Error!';
                 syncStatus.style.color = '#ef4444';
-                setTimeout(() => { syncStatus.style.display = 'none'; }, 3000);
+                setTimeout(() => { syncStatus.style.display = 'none'; }, 2000);
             }
         }
 
-        // Button Event Listeners
         document.getElementById('btn-cube').addEventListener('click', () => createShape('Cube'));
         document.getElementById('btn-sphere').addEventListener('click', () => createShape('Sphere'));
         document.getElementById('btn-cylinder').addEventListener('click', () => createShape('Cylinder'));
