@@ -3,184 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forge 3D - Pro Gizmo Engine</title>
+    <title>Forge 3D - True Prisma Engine</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-
-        body {
-            background-color: #0b0f19;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body { background-color: #0d1117; color: #e2e8f0; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         /* Top Header */
-        .header {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            z-index: 10;
-        }
+        .header { height: 50px; background: #161b22; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #30363d; z-index: 10; }
+        .brand { font-weight: bold; font-size: 16px; color: #3b82f6; }
+        .status { font-size: 11px; color: #10b981; }
 
-        .brand {
-            font-weight: 800;
-            font-size: 20px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-        }
+        /* Large 3D Viewport Area */
+        .viewport-container { flex: 1; position: relative; background: #000; overflow: hidden; }
+        #canvas3d { width: 100%; height: 100%; }
 
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(16, 185, 129, 0.1);
-            padding: 6px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            font-size: 12px;
-            color: #10b981;
-            font-weight: 600;
-        }
+        /* Enlarged UI Overlays (New look) */
+        .message-panel { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d; padding: 12px 20px; border-radius: 12px; backdrop-filter: blur(5px); text-align: center; max-width: 85%; z-index: 5; }
+        .m-title { color: #10b981; font-weight: bold; font-size: 14px; margin-bottom: 3px; }
+        .m-desc { color: #94a3b8; font-size: 12px; }
 
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
-        }
-
-        /* 3D Viewport Area */
-        .viewport-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #1e293b 0%, #0b0f19 100%);
-            overflow: hidden;
-        }
-
-        #canvas3d {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* Overlay Notification Panel */
-        .overlay-msg {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 12px 25px;
-            border-radius: 30px;
-            backdrop-filter: blur(8px);
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            pointer-events: none;
-            max-width: 90%;
-            z-index: 5;
-        }
-
-        /* Input Area */
-        .prompt-section {
-            padding: 15px 20px 25px 20px;
-            background: #0f172a;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            z-index: 10;
-        }
-
-        .input-wrapper {
-            display: flex;
-            align-items: center;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 30px;
-            padding: 5px;
-            padding-left: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .input-wrapper:focus-within {
-            border-color: #3b82f6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
-        }
-
-        .prompt-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 15px;
-            outline: none;
-            user-select: auto;
-        }
-
-        .prompt-input::placeholder {
-            color: #64748b;
-        }
-
-        .send-btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .send-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Much Larger Bottom Input Control Panel */
+        .controls-section { background: #161b22; border-top: 1px solid #30363d; z-index: 10; padding: 20px 15px 30px 15px; /* Kafi badi space */ }
+        .command-bar { display: flex; align-items: center; background: #0d1117; border: 1px solid #30363d; border-radius: 10px; padding: 10px; gap: 10px; max-width: 500px; margin: 0 auto; }
+        .prompt-input { flex: 1; background: transparent; border: none; color: white; font-size: 16px; outline: none; user-select: auto; }
+        .prompt-input::placeholder { color: #64748b; }
+        
+        .send-btn { background: #3b82f6; color: white; border: none; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .send-icon { display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <header class="header">
         <div class="brand">FORGE 3D</div>
-        <div class="status-badge">
-            <div class="pulse-dot"></div>
-            <span>Gizmo Engine Live</span>
-        </div>
+        <div class="status">Prisma Gizmo Active</div>
     </header>
 
     <main class="viewport-container">
         <div id="canvas3d"></div>
-
-        <div class="overlay-msg" id="notify-card">
-            <h4 id="status-title" style="color: #3b82f6;">AI Command Center</h4>
-            <p id="status-desc">Use Lal/Hare arrows to move the White Cube like Prisma 3D!</p>
+        <div class="message-panel" id="notify-panel">
+            <p class="m-title">3D VIEWPORT</p>
+            <p class="m-desc">Use Lal/Hare arrows to Move like Prisma 3D!</p>
         </div>
     </main>
 
-    <footer class="prompt-section">
-        <div class="input-wrapper">
+    <footer class="controls-section">
+        <div class="command-bar">
             <input type="text" id="prompt-input" class="prompt-input" placeholder="Type shape command here..." autocomplete="off">
             <button class="send-btn" id="send-btn">
                 <span class="send-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 2L11 13"></path>
                         <path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
                     </svg>
@@ -197,69 +69,53 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDd2GwU88EOEEjBuJ24sxRlzjpuhRlWEBA",
-            authDomain: "forge-3d-7ee40.firebaseapp.com",
-            projectId: "forge-3d-7ee40",
-            storageBucket: "forge-3d-7ee40.firebasestorage.app",
-            messagingSenderId: "912860530280",
-            appId: "1:912860530280:web:1f0bd05efdd24abf169ddd",
-            measurementId: "G-Z1772PHWR0"
-        };
+        // Verified Firebase Config
+        const firebaseConfig = { apiKey: "AIzaSyDd2GwU88EOEEjBuJ24sxRlzjpuhRlWEBA", authDomain: "forge-3d-7ee40.firebaseapp.com", projectId: "forge-3d-7ee40", storageBucket: "forge-3d-7ee40.firebasestorage.app", messagingSenderId: "912860530280", appId: "1:912860530280:web:1f0bd05efdd24abf169ddd", measurementId: "G-Z1772PHWR0" };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- Three.js Pro Setup ---
+        // Three.js Scene Setup
         const container = document.getElementById('canvas3d');
         const scene = new THREE.Scene();
-        
         const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 3, 6);
+        camera.position.set(2, 3, 5); // Good initial angle
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         container.appendChild(renderer.domElement);
 
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // Professional Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+        dirLight.position.set(5, 10, 7);
+        scene.add(dirLight);
 
-        const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.9);
-        dirLight1.position.set(5, 10, 7);
-        scene.add(dirLight1);
-
-        const dirLight2 = new THREE.DirectionalLight(0x90caf9, 0.3);
-        dirLight2.position.set(-5, -5, -5);
-        scene.add(dirLight2);
-
-        // Controls Setup
+        // Professional Orbit (Camera) Controls
         const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
         orbitControls.enableDamping = true;
 
-        // --- Asli Prisma 3D Nishaniyan (TransformGizmo) ---
+        // --- TRUE PRISMA 3D GIZMO (TransformControls) ---
         const transformControls = new THREE.TransformControls(camera, renderer.domElement);
-        // Default mode 'translate' par rakha hai taake arrows se move kar sakein
+        // "Translate" mode for moving
         transformControls.setMode('translate'); 
         scene.add(transformControls);
 
-        // Touch Interaction: Jab user shape move karega, toh camera rotation band honi chahie
+        // Mobile touch synchronization
         transformControls.addEventListener('dragging-changed', function (event) {
             orbitControls.enabled = !event.value;
         });
 
-        // Grid Floor & Axes Helper (center line system like prisma)
-        const gridHelper = new THREE.GridHelper(10, 10, 0x475569, 0x334155);
+        // Grid Floor (Prisma Background)
+        const gridHelper = new THREE.GridHelper(10, 10, 0x30363d, 0x21262d);
         gridHelper.position.y = -1.5;
         scene.add(gridHelper);
 
-        const axesHelper = new THREE.AxesHelper(1); // X,Y,Z static center lines
-        axesHelper.position.y = -1.49;
-        scene.add(axesHelper);
-
         let currentMesh = null;
 
+        // Handle Resizing
         window.addEventListener('resize', () => {
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
@@ -274,68 +130,57 @@
         }
         animate();
 
-        // --- Prompt Box Engine ---
+        // Prompt Box logic
         const promptInput = document.getElementById('prompt-input');
         const sendBtn = document.getElementById('send-btn');
-        const statusTitle = document.getElementById('status-title');
-        const statusDesc = document.getElementById('status-desc');
+        const notifyPanel = document.getElementById('notify-panel');
+        const statusTitle = notifyPanel.querySelector('.m-title');
+        const statusDesc = notifyPanel.querySelector('.m-desc');
 
         async function process3DCommand() {
             const text = promptInput.value.trim().toLowerCase();
             if (!text) return;
 
-            statusTitle.innerText = " Building Mesh...";
+            statusTitle.innerText = "⏳ Building Mesh...";
             statusTitle.style.color = "#8b5cf6";
-            statusDesc.innerText = "Generating pure white object with gizmo arrows...";
+            statusDesc.innerText = "Generating white object with Prisma gizmo...";
             promptInput.value = "";
 
             if (currentMesh) {
                 scene.remove(currentMesh);
-                transformControls.detach(); // Purani shape se teer hatao
+                transformControls.detach(); // Detach gizmo from old object
             }
 
             let geometry;
-            let material = new THREE.MeshStandardMaterial({ 
-                color: 0xffffff, // Pure White
-                roughness: 0.2,
-                metalness: 0.1
-            });
-            let shapeDetected = "Custom Shape";
+            let material = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.1 });
+            let shapeDetected = "Unknown";
 
             if (text.includes("cube") || text.includes("box") || text.includes("dabba")) {
-                geometry = new THREE.BoxGeometry(1.6, 1.6, 1.6);
-                shapeDetected = "3D Cube Box";
+                geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5); shapeDetected = "3D Cube Box";
             } else if (text.includes("sphere") || text.includes("ball") || text.includes("gola")) {
-                geometry = new THREE.SphereGeometry(1.2, 32, 32);
-                shapeDetected = "3D Sphere Ball";
+                geometry = new THREE.SphereGeometry(1.2, 32, 32); shapeDetected = "3D Sphere Ball";
             } else if (text.includes("cone") || text.includes("pyramid")) {
-                geometry = new THREE.ConeGeometry(1.2, 2.2, 4);
-                shapeDetected = "3D Pyramid Cone";
+                geometry = new THREE.ConeGeometry(1.2, 2.2, 4); shapeDetected = "3D Pyramid Cone";
             } else {
-                geometry = new THREE.TorusKnotGeometry(0.7, 0.25, 100, 16);
-                shapeDetected = `Knot: ${text}`;
+                geometry = new THREE.TorusKnotGeometry(0.7, 0.25, 100, 16); shapeDetected = `Custom Knot`;
             }
 
             currentMesh = new THREE.Mesh(geometry, material);
-            currentMesh.position.y = -0.5; 
+            currentMesh.position.y = -0.5; // Adjusted above the floor grid helper
             scene.add(currentMesh);
 
-            // --- Shape ke upar professional 3D Arrows joro ---
+            // --- ATTACH PRISMA GIZMO TO SHAPE ---
             transformControls.attach(currentMesh);
 
             try {
                 await addDoc(collection(db, "forge_3d_prisma_runs"), {
-                    userInput: text,
-                    detectedObject: shapeDetected,
-                    author: "Sohaib Nazir",
-                    timestamp: new Date()
+                    userInput: text, detectedObject: shapeDetected, author: "Sohaib Nazir", timestamp: new Date()
                 });
-
-                statusTitle.innerText = " Prisma Gizmo Active!";
+                statusTitle.innerText = "✅ Prisma Engine Active!";
                 statusTitle.style.color = "#10b981";
-                statusDesc.innerText = `White "${shapeDetected}" generated. Use arrows to move!`;
+                statusDesc.innerText = `White "${shapeDetected}" generated and saved to Firebase cloud.`;
             } catch (error) {
-                statusTitle.innerText = " Sync Error";
+                statusTitle.innerText = "❌ Saved Locally Only";
                 statusTitle.style.color = "#ef4444";
                 statusDesc.innerText = error.message;
             }
