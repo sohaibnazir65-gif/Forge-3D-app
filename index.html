@@ -52,8 +52,8 @@
 <body>
 
     <div class="container">
-        <h2>Firebase Cloud Test 🔥</h2>
-        <p>Sohaib bhai, niche wala button daba kar check karein ke data live cloud par jata hai ya nahi!</p>
+        <h2>Firebase Cloud Test </h2>
+        <p>Sohaib bhai, neeche wala button daba kar check karein ke data live cloud par jata hai ya nahi!</p>
         <button id="btn-test">Send Data to Firebase</button>
         <div id="status">Status: Waiting for click...</div>
     </div>
@@ -62,7 +62,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // Aapke naye screenshot se li gayi 100% original keys
+        // Aapki bilkul original aur asli configuration keys
         const firebaseConfig = {
             apiKey: "AIzaSyDd2GwU88EOEEjBuJ24sxRlzjpuhRlWEBA",
             authDomain: "forge-3d-7ee40.firebaseapp.com",
@@ -84,7 +84,7 @@
             statusDiv.style.color = "#3b82f6";
 
             try {
-                // Yeh data seedha aapke Cloud Firestore mein save hoga
+                // Yeh data ab seedha aapke Cloud Firestore mein save hoga
                 await addDoc(collection(db, "forge_3d_users"), {
                     authorName: "Sohaib Nazir",
                     projectStatus: "Firebase Connected Successfully",
@@ -92,13 +92,13 @@
                     timestamp: new Date()
                 });
 
-                statusDiv.innerText = "🎉 MUBARAK HO! Data cloud par chala gaya! Firebase 100% active hai.";
+                statusDiv.innerText = " MUBARAK HO! Data cloud par chala gaya! Firebase 100% active hai.";
                 statusDiv.style.color = "#10b981";
                 alert("Success! Your test data has reached Firebase Cloud!");
                 
             } catch (error) {
                 console.error("Firebase Error: ", error);
-                statusDiv.innerText = "Error: Database rules are likely blocking write access. We will fix rules next.";
+                statusDiv.innerText = "Error: " + error.message;
                 statusDiv.style.color = "#ef4444";
             }
         });
