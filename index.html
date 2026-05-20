@@ -2,67 +2,166 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Live Test - Forge 3D</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Forge 3D - Cloud Engine</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
         body {
-            background-color: #101112;
-            color: white;
-            font-family: sans-serif;
+            background-color: #0d0f12;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: #15181e;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            border-bottom: 1px solid #232834;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 18px;
+            color: #3b82f6;
+            letter-spacing: 0.5px;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* Canvas Display Area */
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle, #1a1f29 0%, #0d0f12 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #display-screen {
+            text-align: center;
+            color: #64748b;
+            font-size: 15px;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .highlight-text {
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+        /* Bottom Toolbar */
+        .bottom-toolbar {
+            background: #15181e;
+            padding: 15px;
+            border-top: 1px solid #232834;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .tool-btn {
+            background: #1e2430;
+            color: #cbd5e1;
+            border: 1px solid #2d3648;
+            padding: 14px 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+            gap: 6px;
+            transition: all 0.2s ease;
         }
-        .container {
-            background: #181a1b;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            max-width: 90%;
-        }
-        button {
+
+        .tool-btn:active {
             background: #3b82f6;
             color: white;
-            border: none;
-            padding: 14px 28px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.2s;
-            width: 100%;
+            border-color: #3b82f6;
+            transform: scale(0.95);
         }
-        button:active {
-            background: #1d4ed8;
-        }
-        #status {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #8b9298;
-            line-height: 1.4;
+
+        .btn-icon {
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Firebase Cloud Test </h2>
-        <p>Sohaib bhai, neeche wala button daba kar check karein ke data live cloud par jata hai ya nahi!</p>
-        <button id="btn-test">Send Data to Firebase</button>
-        <div id="status">Status: Waiting for click...</div>
-    </div>
+    <header class="top-bar">
+        <div class="logo">FORGE 3D</div>
+        <div class="status-container">
+            <div class="status-dot"></div>
+            <span style="font-size: 12px; color: #10b981; font-weight: 600;">Firebase Live</span>
+        </div>
+    </header>
+
+    <main class="canvas-container">
+        <div id="display-screen">
+            <p id="cloud-msg">Neeche se koi bhi shape add karein...<br>Woh live <span class="highlight-text">Firebase Database</span> par save ho jayegi!</p>
+        </div>
+    </main>
+
+    <footer class="bottom-toolbar">
+        <div class="tools-grid">
+            <button class="tool-btn" id="btn-cube">
+                <span class="btn-icon">📦</span>
+                <span>Add Cube</span>
+            </button>
+            <button class="tool-btn" id="btn-sphere">
+                <span class="btn-icon">🔵</span>
+                <span>Add Sphere</span>
+            </button>
+            <button class="tool-btn" id="btn-cone">
+                <span class="btn-icon">📐</span>
+                <span>Add Cone</span>
+            </button>
+        </div>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // Aapki bilkul original aur asli configuration keys
+        // Aapki Verified Firebase Keys
         const firebaseConfig = {
             apiKey: "AIzaSyDd2GwU88EOEEjBuJ24sxRlzjpuhRlWEBA",
             authDomain: "forge-3d-7ee40.firebaseapp.com",
@@ -73,35 +172,38 @@
             measurementId: "G-Z1772PHWR0"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Click Engine
-        document.getElementById('btn-test').addEventListener('click', async () => {
-            const statusDiv = document.getElementById('status');
-            statusDiv.innerText = "Connecting to Google Cloud Servers...";
-            statusDiv.style.color = "#3b82f6";
+        const displayScreen = document.getElementById('cloud-msg');
 
+        // Data Bhejne Ka Universal Function
+        async function sendShapeToFirebase(shapeName, shapeEmoji) {
+            displayScreen.innerHTML = `Sending <span style="color:#3b82f6;">${shapeName}</span> to Firebase Cloud... ⏳`;
+            
             try {
-                // Yeh data ab seedha aapke Cloud Firestore mein save hoga
-                await addDoc(collection(db, "forge_3d_users"), {
-                    authorName: "Sohaib Nazir",
-                    projectStatus: "Firebase Connected Successfully",
-                    deviceConnected: "Mobile Infinix Smart 7",
-                    timestamp: new Date()
+                await addDoc(collection(db, "forge_3d_shapes"), {
+                    shapeType: shapeName,
+                    createdBy: "Sohaib Nazir",
+                    device: "Infinix Smart 7",
+                    status: "Saved Successfully",
+                    time: new Date()
                 });
 
-                statusDiv.innerText = " MUBARAK HO! Data cloud par chala gaya! Firebase 100% active hai.";
-                statusDiv.style.color = "#10b981";
-                alert("Success! Your test data has reached Firebase Cloud!");
-                
+                displayScreen.innerHTML = `
+                    <span style="font-size: 40px;">${shapeEmoji}</span><br>
+                    <span style="color: #10b981; font-weight: bold; font-size: 16px;">🎉 SUCCESS!</span><br>
+                    आपका <span style="color: white; font-weight:bold;">${shapeName}</span> live Firebase server par save ho gaya hai!
+                `;
             } catch (error) {
-                console.error("Firebase Error: ", error);
-                statusDiv.innerText = "Error: " + error.message;
-                statusDiv.style.color = "#ef4444";
+                displayScreen.innerHTML = `<span style="color: #ef4444;">Error: ${error.message}</span>`;
             }
-        });
+        }
+
+        // Buttons Click Listeners
+        document.getElementById('btn-cube').addEventListener('click', () => sendShapeToFirebase("Cube Box", "📦"));
+        document.getElementById('btn-sphere').addEventListener('click', () => sendShapeToFirebase("Sphere Ball", "🔵"));
+        document.getElementById('btn-cone').addEventListener('click', () => sendShapeToFirebase("Cone Pyramid", "📐"));
     </script>
 </body>
 </html>
