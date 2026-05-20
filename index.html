@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Forge 3D - Pro Prisma Controls</title>
+    <title>Forge 3D - Pure Prisma Clone</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         
         body { 
-            background-color: #2c2c2c; 
+            background-color: #2c2c2c; /* Prisma Dark Grey */
             overflow: hidden; 
             font-family: sans-serif;
             width: 100vw;
@@ -37,39 +37,7 @@
             border: 1px solid #444;
         }
 
-        /* NEW: Top Center Transform Mode Toolbar */
-        .transform-toolbar {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            background: rgba(40, 40, 40, 0.9);
-            border: 1px solid #444;
-            border-radius: 8px;
-            overflow: hidden;
-            z-index: 10;
-        }
-
-        .t-btn {
-            background: transparent;
-            border: none;
-            color: #a3a3a3;
-            padding: 8px 15px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-right: 1px solid #444;
-        }
-        .t-btn:last-child { border-right: none; }
-
-        .t-btn.active {
-            background: #f59e0b; /* Orange active state like Prisma */
-            color: #fff;
-        }
-
-        /* Left Side Shapes Toolbar */
+        /* Left Side Shapes Toolbar (Exactly like Prisma video) */
         .left-toolbar {
             position: absolute;
             bottom: 30px;
@@ -81,11 +49,11 @@
         }
 
         .tool-btn {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: #2a2a2a;
             border: 1px solid #444;
-            border-radius: 4px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -94,36 +62,15 @@
         }
 
         .tool-btn:active { background: #444; border-color: #f59e0b; }
-        .tool-btn svg { width: 22px; height: 22px; stroke: #a3a3a3; fill: none; stroke-width: 1.5; }
+        .tool-btn svg { width: 24px; height: 24px; stroke: #a3a3a3; fill: none; stroke-width: 1.5; }
         .tool-btn:active svg { stroke: #f59e0b; }
 
-        /* Sync Status indicator */
-        .sync-status {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            font-size: 11px;
-            color: #10b981;
-            z-index: 10;
-            background: rgba(0,0,0,0.6);
-            padding: 4px 10px;
-            border-radius: 4px;
-            display: none; 
-        }
     </style>
 </head>
 <body>
 
-    <div class="sync-status" id="sync-status">Cloud Sync...</div>
-
     <div class="top-menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-    </div>
-
-    <div class="transform-toolbar">
-        <button class="t-btn active" id="mode-translate">Move</button>
-        <button class="t-btn" id="mode-rotate">Rotate</button>
-        <button class="t-btn" id="mode-scale">Scale</button>
     </div>
 
     <div id="canvas-container"></div>
@@ -157,11 +104,10 @@
             appId: "1:912860530280:web:1f0bd05efdd24abf169ddd",
             measurementId: "G-Z1772PHWR0"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- 3D Engine Setup ---
+        // --- 3D Scene Setup ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x2c2c2c); 
@@ -186,19 +132,28 @@
         dirLight.position.set(5, 10, 5);
         scene.add(dirLight);
 
-        // Camera Orbit Controls
+        // Orbit Controls (Camera)
         const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
         orbitControls.enableDamping = true;
         orbitControls.dampingFactor = 0.05;
 
-        // --- FIXED MOBILE TOUCH TRANSFORM CONTROLS ---
+        // --- PUKKA TOUCH BUG FIX & PRISMA ARROWS ---
         const transformControls = new THREE.TransformControls(camera, renderer.domElement);
-        transformControls.setSize(1.5); // Gizmo size bada kiya mobile ke liye
+        transformControls.setSize(1.3);
+        
+        // FALTU DABBAY (SQUARES) GHAIB KAR DIYE
+        transformControls.showXY = false;
+        transformControls.showYZ = false;
+        transformControls.showXZ = false;
+        
         scene.add(transformControls);
 
-        // Jab user arrow ko pakre toh camera ghumna band ho jaye (Smooth Fix)
-        transformControls.addEventListener('dragging-changed', function (event) {
-            orbitControls.enabled = !event.value;
+        // MOBILE TOUCH CONFLICT 100% FIX
+        transformControls.addEventListener('mouseDown', function () {
+            orbitControls.enabled = false; // Teer pkarte hi camera freeze
+        });
+        transformControls.addEventListener('mouseUp', function () {
+            orbitControls.enabled = true; // Teer chhorne par camera wapas on
         });
 
         let currentMesh = null;
@@ -216,26 +171,7 @@
         }
         animate();
 
-        // --- Move, Rotate, Scale Mode Switch Logic ---
-        const btnTranslate = document.getElementById('mode-translate');
-        const btnRotate = document.getElementById('mode-rotate');
-        const btnScale = document.getElementById('mode-scale');
-
-        function setTransformMode(mode, activeBtn) {
-            transformControls.setMode(mode);
-            btnTranslate.classList.remove('active');
-            btnRotate.classList.remove('active');
-            btnScale.classList.remove('active');
-            activeBtn.classList.add('active');
-        }
-
-        btnTranslate.addEventListener('click', () => setTransformMode('translate', btnTranslate));
-        btnRotate.addEventListener('click', () => setTransformMode('rotate', btnRotate));
-        btnScale.addEventListener('click', () => setTransformMode('scale', btnScale));
-
         // --- Shape Creation & Firebase Sync ---
-        const syncStatus = document.getElementById('sync-status');
-
         async function createShape(shapeType) {
             if (currentMesh) {
                 scene.remove(currentMesh);
@@ -253,28 +189,17 @@
             currentMesh.position.y = 0;
             scene.add(currentMesh);
 
-            // Shape ke upar nishaniyan laga do aur Move mode par reset kardo
+            // Teer attach karo
             transformControls.attach(currentMesh);
-            setTransformMode('translate', btnTranslate);
-
-            syncStatus.style.display = 'block';
-            syncStatus.innerText = 'Syncing...';
-            syncStatus.style.color = '#f59e0b';
 
             try {
                 await addDoc(collection(db, "forge_3d_prisma_runs"), {
-                    userInput: `Generated: ${shapeType}`,
-                    detectedObject: `3D ${shapeType}`,
+                    userInput: `Spawned ${shapeType}`,
                     author: "Sohaib Nazir",
                     timestamp: new Date()
                 });
-                syncStatus.innerText = 'Synced ✅';
-                syncStatus.style.color = '#10b981';
-                setTimeout(() => { syncStatus.style.display = 'none'; }, 2000);
             } catch (error) {
-                syncStatus.innerText = 'Error!';
-                syncStatus.style.color = '#ef4444';
-                setTimeout(() => { syncStatus.style.display = 'none'; }, 2000);
+                console.log("Firebase sync skipped");
             }
         }
 
